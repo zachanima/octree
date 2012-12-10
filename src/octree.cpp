@@ -57,11 +57,12 @@ Octree::~Octree() {
 
 
 GLvoid Octree::update(glm::vec3 camera) {
-  if (level > 0 && glm::distance(camera, position) < glm::pow(glm::pow(2.f, (GLfloat)level) / 65536.f, 2.f) * 16.f) {
-    if (children[0] == NULL) {
-      divide();
-    }
-  } else if (children[0] != NULL) {
+  const GLboolean split = level > 0 && glm::distance(camera, position) < glm::pow(glm::pow(2.f, (GLfloat)level) / 65536.f, 2.f) * 16.f;
+
+  if (children[0] == NULL && split) {
+    divide();
+
+  } else if (children[0] != NULL && !split) {
     for (size_t i = 0; i < 8; i++) {
       delete children[i];
       children[i] = NULL;
