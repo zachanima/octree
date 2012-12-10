@@ -10,8 +10,8 @@ Octree *Game::octree = NULL;
 GLvoid Game::initialize() {
   const GLfloat FOV = 45.f;
   const GLfloat ASPECT = (GLfloat)WIDTH / (GLfloat)HEIGHT;
-  const GLfloat ZNEAR = 1.f / 65536.f;
-  const GLfloat ZFAR = 65536.f;
+  const GLfloat ZNEAR = 1.f / 256.f;
+  const GLfloat ZFAR = 256.f;
   const glm::mat4 model(
     glm::vec4(1.f, 0.f, 0.f, 0.f),
     glm::vec4(0.f, 1.f, 0.f, 0.f),
@@ -32,11 +32,11 @@ GLvoid Game::initialize() {
   projectionUniform =      glGetUniformLocation(program, "projection");
   
   // Initialize camera.
-  camera.position = glm::vec3(0.f, 0.f, 4.f);
+  camera.position = glm::vec3(0.f, 0.f, 8.f);
   offsetOrientation(glm::vec3(0.f, 1.f, 0.f), 0.f);
 
   // Initialize octree.
-  octree = new Octree(glm::vec3(.5f, .5f, .5f), 16);
+  octree = new Octree(glm::vec3(0.f, 0.f, 0.f), 16);
 
   // Apply uniforms.
   glUseProgram(program);
@@ -47,11 +47,18 @@ GLvoid Game::initialize() {
 
 
 
+GLvoid Game::deinitialize() {
+  delete octree;
+}
+
+
+
 GLvoid Game::update() {
   static GLuint ticks = SDL_GetTicks();
   const GLuint delta = SDL_GetTicks() - ticks;
   ticks = SDL_GetTicks();
 
+  octree->update(camera.position);
   if (Keyboard::isKeyDown(KEY_UP)) { offsetOrientation(glm::vec3( 1.f, 0.f,  0.f), 0.00025f * delta); }
   if (Keyboard::isKeyDown(KEY_DOWN)) { offsetOrientation(glm::vec3(-1.f, 0.f,  0.f), 0.00025f * delta); }
   if (Keyboard::isKeyDown(KEY_LEFT)) { offsetOrientation(glm::vec3( 0.f, 0.f, -1.f), 0.0005f * delta); }
@@ -88,11 +95,6 @@ GLvoid Game::update() {
 
   // Move camera.
   camera.position += camera.velocity;
-
-  // Render initialization.
-  glPointSize(4.f);
-  glEnable(GL_POINT_SMOOTH);
-  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 }
 
 
@@ -101,23 +103,23 @@ GLvoid Game::render() {
   glm::mat4 view = glm::mat4_cast(camera.orientation);
   view = glm::translate(view, -camera.position);
 
-  glClearColor(0.f, 0.f, 0.25f, 1.f);
+  glClearColor(1.f, 1.f, 1.0, 1.f);
   glClearDepth(1.f);
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
   glEnable(GL_DEPTH_TEST);
   glDepthFunc(GL_LEQUAL);
-  glEnable(GL_CULL_FACE);
-  glEnable(GL_TEXTURE_2D);
+  // glEnable(GL_CULL_FACE);
+  // glEnable(GL_TEXTURE_2D);
 
   glUseProgram(program);
 
   glUniform3fv(camera.positionUniform, 1, glm::value_ptr(camera.position));
   glUniformMatrix4fv(viewUniform,      1, GL_FALSE, glm::value_ptr(view));
 
-  // glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+  glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
   octree->render();
-  // glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+  glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
   glUseProgram(0);
 }

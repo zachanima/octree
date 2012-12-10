@@ -10,5 +10,7 @@ int main(int argc, char **argv) {
     Display::update();
   }
 
+  Game::deinitialize();
+
   return 0;
 }

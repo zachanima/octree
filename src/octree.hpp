@@ -6,27 +6,27 @@
 #include <glm/gtc/type_ptr.hpp> // glm::value_ptr
 
 #include "lwcppgl/display.hpp"
+#include "heightmap.hpp"
 #include "vertex.hpp"
 
-#define CHUNK_SIZE (1)
-#define VERTICES_PER_EDGE (CHUNK_SIZE + 1)
-#define VERTICES_PER_FACE (VERTICES_PER_EDGE * VERTICES_PER_EDGE)
-#define VERTICES (VERTICES_PER_FACE * VERTICES_PER_EDGE)
-#define INDICES (VERTICES)
+#define VERTICES (8)
+#define INDICES (14)
 
 class Octree {
   public:
     Octree(glm::vec3, GLuint);
     ~Octree();
-    void render();
+    GLvoid update(glm::vec3);
+    GLvoid render();
 
   private:
     Octree *children[8];
-    Vertex vs[VERTICES];
+    glm::vec3 position;
     GLuint level;
     GLuint vbo;
     GLuint ibo;
     GLvoid divide();
+    const glm::vec3 spherize(glm::vec3);
 };
 
 #endif // OCTREE_HPP

@@ -17,6 +17,7 @@
 class Game {
   public:
     static GLvoid initialize();
+    static GLvoid deinitialize();
     static GLvoid update();
     static GLvoid render();
 
