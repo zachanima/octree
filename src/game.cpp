@@ -12,12 +12,7 @@ GLvoid Game::initialize() {
   const GLfloat ASPECT = (GLfloat)WIDTH / (GLfloat)HEIGHT;
   const GLfloat ZNEAR = 1.f / 256.f;
   const GLfloat ZFAR = 256.f;
-  const glm::mat4 model(
-    glm::vec4(1.f, 0.f, 0.f, 0.f),
-    glm::vec4(0.f, 1.f, 0.f, 0.f),
-    glm::vec4(0.f, 0.f, 1.f, 0.f),
-    glm::vec4(0.f, 0.f, 0.f, 1.f)
-  );
+  const glm::mat4 model(1.f);
   const glm::mat4 projection = glm::perspective(FOV, ASPECT, ZNEAR, ZFAR);
   GLuint modelUniform;
   GLuint projectionUniform;
