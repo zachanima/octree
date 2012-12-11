@@ -16,6 +16,7 @@ class Display {
     static GLuint shaders(const char *, const char *);
 
   private:
+    static GLvoid shaderlog(GLuint object);
     static GLchar *source(const GLchar *);
 };
 

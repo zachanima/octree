@@ -1,7 +1,7 @@
 #ifndef HEIGHTMAP_HPP
 #define HEIGHTMAP_HPP
 
-#include <GL/gl.h>
+#include <GL/glew.h>
 #include <glm/glm.hpp>
 
 class Heightmap {
