@@ -11,8 +11,8 @@
 #include "octree.hpp"
 #include "camera.hpp"
 
-#define WIDTH (1280)
-#define HEIGHT (720)
+#define WIDTH (512)
+#define HEIGHT (512)
 
 class Game {
   public:
@@ -22,11 +22,11 @@ class Game {
     static GLvoid render();
 
   private:
-    static Camera camera;
-    static GLuint program;
     static GLuint viewUniform;
-    static Octree *octree;
+    static GLuint program;
     static GLvoid offsetOrientation(glm::vec3, GLfloat);
+    static Camera camera;
+    static Octree *octree;
 };
 
 #endif // GAME_HPP

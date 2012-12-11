@@ -4,7 +4,7 @@ OUT     = bin/$(PROJECT)
 
 CC      = g++
 CFLAGS  = -O2 -ansi -pedantic -g -Wall
-LFLAGS  = -lGL -lGLU -lSDL
+LFLAGS  = -lGL -lGLU -lGLEW -lSDL
 
 all: $(PROJECT)
 

@@ -8,6 +8,7 @@ GLvoid Display::create(GLuint width, GLuint height) {
   SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
   SDL_WM_SetCaption("Game", 0);
   SDL_SetVideoMode(width, height, BPP, FLAGS);
+  glewInit();
 }
 
 

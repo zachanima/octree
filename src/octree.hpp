@@ -3,6 +3,7 @@
 
 #include <cmath>
 #include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp> // glm::translate
 #include <glm/gtc/type_ptr.hpp> // glm::value_ptr
 
 #include "lwcppgl/display.hpp"
@@ -14,17 +15,21 @@
 
 class Octree {
   public:
-    Octree(glm::vec3, GLuint);
+    GLboolean active;
+    Octree(glm::vec3, Octree *, GLuint);
     ~Octree();
+    static GLvoid initialize();
     GLvoid update(glm::vec3);
-    GLvoid render();
+    GLvoid render(GLuint);
 
   private:
     Octree *children[8];
+    Octree *parent;
     glm::vec3 position;
+    glm::vec3 color;
     GLuint level;
-    GLuint vbo;
-    GLuint ibo;
+    static GLuint ibo;
+    static GLuint vbo;
     GLvoid divide();
     const glm::vec3 spherize(glm::vec3);
 };

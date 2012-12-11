@@ -5,6 +5,8 @@ in vec2 vertexTexture;
 
 out vec4 color;
 
+uniform vec3 inColor;
+
 void main(void) {
-  color = vec4(0.f, 0.f, 0.f, 1.f);
+  color = vec4(inColor, 1.f);
 }

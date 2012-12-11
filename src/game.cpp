@@ -12,9 +12,7 @@ GLvoid Game::initialize() {
   const GLfloat ASPECT = (GLfloat)WIDTH / (GLfloat)HEIGHT;
   const GLfloat ZNEAR = 1.f / 256.f;
   const GLfloat ZFAR = 256.f;
-  const glm::mat4 model(1.f);
   const glm::mat4 projection = glm::perspective(FOV, ASPECT, ZNEAR, ZFAR);
-  GLuint modelUniform;
   GLuint projectionUniform;
 
   // Initialize shaders.
@@ -22,7 +20,6 @@ GLvoid Game::initialize() {
 
   // Initialize uniforms.
   camera.positionUniform = glGetUniformLocation(program, "camera");
-  modelUniform =           glGetUniformLocation(program, "model");
   viewUniform =            glGetUniformLocation(program, "view");
   projectionUniform =      glGetUniformLocation(program, "projection");
   
@@ -31,13 +28,17 @@ GLvoid Game::initialize() {
   offsetOrientation(glm::vec3(0.f, 1.f, 0.f), 0.f);
 
   // Initialize octree.
-  octree = new Octree(glm::vec3(0.f, 0.f, 0.f), 16);
+  Octree::initialize();
+  octree = new Octree(glm::vec3(0.f, 0.f, 0.f), NULL, 16);
 
   // Apply uniforms.
   glUseProgram(program);
-  glUniformMatrix4fv(modelUniform, 1, GL_FALSE, glm::value_ptr(model));
   glUniformMatrix4fv(projectionUniform, 1, GL_FALSE, glm::value_ptr(projection));
   glUseProgram(0);
+
+  // Initialize render settings.
+  glEnable(GL_BLEND);
+  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 }
 
 
@@ -90,6 +91,8 @@ GLvoid Game::update() {
 
   // Move camera.
   camera.position += camera.velocity;
+
+  printf("%d ms\n", delta);
 }
 
 
@@ -112,9 +115,9 @@ GLvoid Game::render() {
   glUniform3fv(camera.positionUniform, 1, glm::value_ptr(camera.position));
   glUniformMatrix4fv(viewUniform,      1, GL_FALSE, glm::value_ptr(view));
 
-  glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-  octree->render();
-  glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+  // glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+  octree->render(program);
+  // glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
   glUseProgram(0);
 }
