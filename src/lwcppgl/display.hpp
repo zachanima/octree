@@ -3,6 +3,8 @@
 
 #include <cstdio>
 #include <cstdlib>
+#include <fstream>
+#include <string>
 
 #include <GL/glew.h>
 #include <SDL/SDL.h>
@@ -17,7 +19,7 @@ class Display {
 
   private:
     static GLvoid shaderlog(GLuint object);
-    static GLchar *source(const GLchar *);
+    static std::string source(const GLchar *);
 };
 
 #endif // LWCPPGL_DISPLAY_HPP

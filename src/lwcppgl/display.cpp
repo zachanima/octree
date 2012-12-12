@@ -21,16 +21,18 @@ GLvoid Display::update() {
 
 
 GLuint Display::shaders(const GLchar *vertexFilename, const GLchar *fragmentFilename) {
-  const GLchar *vertexSource = source(vertexFilename);
-  const GLchar *fragmentSource = source(fragmentFilename);
+  const std::string vertexSource = source(vertexFilename);
+  const std::string fragmentSource = source(fragmentFilename);
+  const GLchar *vertex = vertexSource.c_str();
+  const GLchar *fragment = fragmentSource.c_str();
 
   const GLuint vertexShader = glCreateShader(GL_VERTEX_SHADER);
-  glShaderSource(vertexShader, 1, &vertexSource, 0);
+  glShaderSource(vertexShader, 1, &vertex, 0);
   glCompileShader(vertexShader);
   shaderlog(vertexShader);
 
   const GLuint fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
-  glShaderSource(fragmentShader, 1, &fragmentSource, 0);
+  glShaderSource(fragmentShader, 1, &fragment, 0);
   glCompileShader(fragmentShader);
   shaderlog(fragmentShader);
 
@@ -70,24 +72,16 @@ GLvoid Display::shaderlog(GLuint object) {
 
 
 
-GLchar *Display::source(const GLchar *filename) {
-  FILE *file;
-  long length;
-  char *buffer;
-
-  file = fopen(filename, "r");
-  if (!file) {
-    return NULL;
+std::string Display::source(const char *filename) {
+  std::ifstream in(filename, std::ios::in | std::ios::binary);
+  if (in) {
+    std::string contents;
+    in.seekg(0, std::ios::end);
+    contents.resize(in.tellg());
+    in.seekg(0, std::ios::beg);
+    in.read(&contents[0], contents.size());
+    in.close();
+    return(contents);
   }
-  fseek(file, 0, SEEK_END);
-  length = ftell(file);
-  buffer = (char *)malloc(length + 1);
-  fseek(file, 0, SEEK_SET);
-  if (!fread(buffer, length, 1, file)) {
-    return NULL;
-  }
-  fclose(file);
-  buffer[length] = 0;
-
-  return buffer;
+  throw(-1);
 }
