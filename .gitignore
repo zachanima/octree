@@ -1,2 +1,3 @@
 *.swp
-bin/octree
+bin/octree*
+bin/*.dll
