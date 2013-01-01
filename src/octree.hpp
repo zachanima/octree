@@ -28,6 +28,7 @@ class Octree {
     glm::vec3 position;
     glm::vec3 color;
     GLuint level;
+    GLboolean leaf;
     static GLuint ibo;
     static GLuint vbo;
     GLvoid divide();

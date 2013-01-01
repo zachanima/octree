@@ -9,6 +9,7 @@ Octree::Octree(glm::vec3 position, Octree *parent, GLuint level) {
   this->level = level;
   this->position = position;
   this->parent = parent;
+  leaf = false;
 
   // Nullify children.
   for (size_t i = 0; i < 8; i++) {
@@ -16,12 +17,12 @@ Octree::Octree(glm::vec3 position, Octree *parent, GLuint level) {
   }
 
   // Determine if this cube is active.
-  active = Heightmap::simplex(position, 1, .5f, .5f) < .33f;
+  active = Heightmap::simplex(position + glm::vec3(2.f, 2.f, 2.f), 1, .5f, .5f) < .33f;
 
   color = glm::vec3(
-    (GLfloat)rand() / (GLfloat)RAND_MAX,
-    (GLfloat)rand() / (GLfloat)RAND_MAX,
-    (GLfloat)rand() / (GLfloat)RAND_MAX
+    position.x, // (GLfloat)rand() / (GLfloat)RAND_MAX,
+    position.y, // (GLfloat)rand() / (GLfloat)RAND_MAX,
+    position.z // (GLfloat)rand() / (GLfloat)RAND_MAX
   );
 }
 
@@ -74,17 +75,31 @@ GLvoid Octree::update(glm::vec3 camera) {
 
   if (children[0] == NULL && split) {
     divide();
+    leaf = false;
 
   } else if (children[0] != NULL && !split) {
     for (size_t i = 0; i < 8; i++) {
       delete children[i];
       children[i] = NULL;
     }
+  } else if (children[0] == NULL) {
+    leaf = true;
   }
 
   if (children[0] != NULL) {
+    size_t counts[2] = { 0, 0 };
+    GLboolean branch = true;
+
     for (size_t i = 0; i < 8; i++) {
       children[i]->update(camera);
+      counts[children[i]->active] += 1;
+      if (!children[i]->leaf) {
+        branch = false;
+      }
+    }
+
+    if (branch && (!counts[0] || !counts[1])) {
+      leaf = true;
     }
   }
 }
@@ -95,15 +110,8 @@ GLvoid Octree::render(GLuint program) {
   const static GLuint modelUniform = glGetUniformLocation(program, "model");
   const static GLuint inColorUniform = glGetUniformLocation(program, "inColor");
 
-  if (children[0] == NULL) {
-    GLboolean surface = false;
-    for (size_t i = 0; i < 8; i++) {
-      if (parent != NULL && !parent->children[i]->active) {
-        surface = true;
-        break;
-      }
-    }
-    if (active && surface) {
+  if (children[0] == NULL || leaf) {
+    if (active) {
       const glm::mat4 model = glm::scale(glm::translate(glm::mat4(1.f), position), glm::vec3(2.f * glm::pow(2.f, (GLfloat)level) / 65536.f));
       glUniformMatrix4fv(modelUniform, 1, GL_FALSE, glm::value_ptr(model));
       glUniform3fv(inColorUniform, 1, glm::value_ptr(color));
@@ -122,7 +130,7 @@ GLvoid Octree::render(GLuint program) {
       glBindBuffer(GL_ARRAY_BUFFER, 0);
     }
 
-  } else if (level > 10) {
+  } else if (level > 8) {
     for (size_t i = 0; i < 8; i++) {
       children[i]->render(program);
     }

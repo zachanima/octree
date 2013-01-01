@@ -11,8 +11,8 @@
 #include "octree.hpp"
 #include "camera.hpp"
 
-#define WIDTH (512)
-#define HEIGHT (512)
+#define WIDTH (1280)
+#define HEIGHT (720)
 
 class Game {
   public:
